@@ -1,5 +1,5 @@
 import TypingBox from "./components/TypingBox"
-import { GlobalStyles } from "./Styles/global,js"
+import { GlobalStyles } from "./Styles/global.js"
 
 function App() {
   return (
