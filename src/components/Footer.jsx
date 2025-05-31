@@ -1,32 +1,38 @@
 import React, { useState } from "react";
-import Select from "react-select/base";
+import { FaLinkedin } from "react-icons/fa6";
+import { SiGithub,SiLeetcode } from "react-icons/si";
+import Select from "react-select";
 import { themeOptions } from "../utils/themeOptions";
-
-
+import { useTheme } from "../context/ThemeContext";
 const Footer = () => {
-    const [value, setValue] = useState({});
-    const handelChange = (e) => {
-        console.log(e);
-    }
+	const [value, setValue] = useState({});
+	const { setTheme ,theme}=useTheme();
+	const handleChange = (e) => {
+		setTheme(e.value);
+		localStorage.setItem("theme", JSON.stringify(e.value));
+	};
 
-    const handleMenuOpen = () => {
-  console.log("Menu opened");
-};
-    return (
-        <div className="footerSection">
-            <div className="footerSectionLinks">Links</div>
-            <div className="footerSectionThemes">
-                <Select
-                    value={value}
-                    onChange={handelChange}
-                    options={themeOptions}
-                    menuPlacement='top'
-                    onMenuOpen={handleMenuOpen}
-                />
- 
+	return (
+		<div className='footerSection'>
+            <div className='footerSectionLinks'>
+                <FaLinkedin />
+                <SiGithub />
+                <SiLeetcode />
             </div>
-        </div>
-    )
-}
+			<div className='themesButton'>
+				<Select
+					onChange={handleChange}
+                    options={themeOptions}
+					menuPlacement="top"
+					defaultValue={{ label: theme.label, value: theme }}
+					styles={{
+						control:styles => ({...styles,backgroundColor:theme.background}),
+						menu:styles => ({...styles,backgroundColor:theme.background})
+					}}
+				/>
+			</div>
+		</div>
+	);
+};
 
 export default Footer;

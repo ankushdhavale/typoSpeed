@@ -6,8 +6,8 @@ export const GlobalStyles = createGlobalStyle`
     box-sizing:border-box;
 }
 body{
-    background:black;
-    color:white;
+    background-color:${({theme})=>theme.backgroundColor};
+    color:${({theme})=>theme.textColor};
     margin:0;
     padding:0;
     overflow-x:hidden;
@@ -39,6 +39,7 @@ body{
     font-size:32px;
     display:flex;
     flex-wrap:wrap;
+    color:${({theme})=>theme.typeBoxText}
 }
 
 .word{
@@ -77,11 +78,11 @@ body{
     animation-timing-function: ease;
     
     @keyframes blinking{
-        0% {border-left-color:white;}
-        25% {border-left-color:black;}
-        50% {border-left-color:white;}
-        75% {border-left-color:black;}
-        100% {border-left-color:white}
+        0% {border-left-color:${({theme})=>theme.textColor};}
+        25% {border-left-color:${({theme})=>theme.backgroundColor};}
+        50% {border-left-color:${({theme})=>theme.textColor};}
+        75% {border-left-color:${({theme})=>theme.backgroundColor};}
+        100% {border-left-color:${({theme})=>theme.textColor}}
     }
 }
 
@@ -91,11 +92,11 @@ body{
     animation-timing-function: ease;
     
     @keyframes blinkingRight{
-        0% {border-right-color:white;}
-        25% {border-right-color:black;}
-        50% {border-right-color:white;}
-        75% {border-right-color:black;}
-        100% {border-right-color:white}
+        0% {border-right-color:${({theme})=>theme.textColor};}
+        25% {border-right-color:${({theme})=>theme.backgroundColor};}
+        50% {border-right-color:${({theme})=>theme.textColor};}
+        75% {border-right-color:${({theme})=>theme.backgroundColor};}
+        100% {border-right-color:${({theme})=>theme.textColor}}
     }
 }
 
@@ -118,5 +119,12 @@ body{
     margin-right:auto; 
 }
 
+.footerSectionLinks{
+    display:flex;
+    gap:1rem;
+    cursor:pointer;
+    font-size:1.2rem;
+    align-items:center;
+}
 
 `;
