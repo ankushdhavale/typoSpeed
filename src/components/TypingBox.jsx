@@ -2,12 +2,18 @@ import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { generate } from "random-words";
 import UpperMenu from "./UpperMenu";
 import { useTestMode } from "../context/TestModeContext";
+import Stats from "./Stats";
 
 const TypingBox = () => {
-	const { testTime, setTestTime } = useTestMode();
+	const { testTime } = useTestMode();
 	const [countDown, setCountDown] = useState(testTime);
 	const [currWordIndex, setCurrWordIndex] = useState(0);
 	const [currCharIndex, setCurrCharIndex] = useState(0);
+	const [correctChars, setCorrectChars] = useState(0);
+	const [incorrectChars, setIncorrectChars] = useState(0);
+	const [missedChars, setMissedChars] = useState(0);
+	const [extraChars, setExtraChars] = useState(0);
+	const [correctWords, setCorrectWords] = useState(0);
 	const inputRef = useRef(null);
 	const [wordsArray, setWordsArray] = useState(() => {
 		return generate(15);
@@ -29,12 +35,17 @@ const TypingBox = () => {
 	const handelInputUser = (e) => {
 		const allCurrChars = wordSpanRef[currWordIndex].current.childNodes;
 
-
 		if (e.keyCode == 32) {
-		// Logic for spaces
+			// Logic for spaces
 
-			
-			
+			const correctCharsInWord = wordSpanRef[
+				currWordIndex
+			].current.querySelectorAll(".correct");
+			console.log(correctCharsInWord.length);
+			if (correctCharsInWord.length === allCurrChars.length) {
+				setCorrectWords(correctWords + 1);
+			}
+
 			if (allCurrChars.length <= currCharIndex) {
 				//Remove cursor from last places
 				allCurrChars[currCharIndex - 1].classList.remove("current-right");
@@ -43,8 +54,8 @@ const TypingBox = () => {
 				allCurrChars[currCharIndex].classList.remove("current");
 			}
 
-
- 			wordSpanRef[currWordIndex + 1].current.childNodes[0].className = "current";
+			wordSpanRef[currWordIndex + 1].current.childNodes[0].className =
+				"current";
 			setCurrWordIndex(currWordIndex + 1);
 			setCurrCharIndex(0);
 			return;
@@ -53,73 +64,87 @@ const TypingBox = () => {
 		if (e.keyCode === 8) {
 			// backspace logic
 
-
 			if (currCharIndex !== 0) {
-				
 				if (allCurrChars.length === currCharIndex) {
-
-					if (allCurrChars[currCharIndex - 1].className.includes('extra')) {
+					if (allCurrChars[currCharIndex - 1].className.includes("extra")) {
 						allCurrChars[currCharIndex - 1].remove();
-						allCurrChars[currCharIndex - 2].className += ' current-right';
-					}
-					else {
-					allCurrChars[currCharIndex - 1].className = 'current';
+						allCurrChars[currCharIndex - 2].className += " current-right";
+					} else {
+						setMissedChars(missedChars + (allCurrChars.length - currCharIndex));
+						allCurrChars[currCharIndex - 1].className = "current";
 					}
 					setCurrCharIndex(currCharIndex - 1);
 					return;
 				}
 
-				allCurrChars[currCharIndex].className = '';
-				allCurrChars[currCharIndex - 1].className = 'current';
+				allCurrChars[currCharIndex].className = "";
+				allCurrChars[currCharIndex - 1].className = "current";
 				setCurrCharIndex(currCharIndex - 1);
 			}
-
 
 			return;
 		}
 
 		if (currCharIndex === allCurrChars.length) {
-			
-			let newSpan = document.createElement('span');
+			//extra word are typing
+			let newSpan = document.createElement("span");
 			newSpan.innerText = e.key;
-			newSpan.className = 'inCorrectColor extra current-right';
-			allCurrChars[currCharIndex - 1].classList.remove('current-right');
+			newSpan.className = "inCorrectColor extra current-right";
+			allCurrChars[currCharIndex - 1].classList.remove("current-right");
 			wordSpanRef[currWordIndex].current.append(newSpan);
 			setCurrCharIndex(currCharIndex + 1);
-
+			setExtraChars(extraChars + 1);
 			return;
 		}
 
 		if (e.key === allCurrChars[currCharIndex].innerText) {
 			allCurrChars[currCharIndex].className = "correctColor";
+			setCorrectChars(correctChars + 1);
 		} else {
 			allCurrChars[currCharIndex].className = "inCorrectColor";
+			setIncorrectChars(incorrectChars + 1);
 		}
 
-		if (currCharIndex+1 === allCurrChars.length) {
+		if (currCharIndex + 1 === allCurrChars.length) {
 			allCurrChars[currCharIndex].className += " current-right";
 		} else {
 			allCurrChars[currCharIndex + 1].className = "current";
 		}
 		setCurrCharIndex(currCharIndex + 1);
 	};
-	
-	const inputFocus = () => {
+
+	const calculateWPM = () => {
+		return Math.round(correctChars / 5 / (testTime / 60));
+	};
+
+	const calculateAcc = () => {
+		return Math.round((correctWords / currWordIndex) * 100);
+	};
+	const focusInput = () => {
 		inputRef.current.focus();
 	};
 
 	useEffect(() => {
-		inputFocus();
+		focusInput;
 		wordSpanRef[0].current.childNodes[0].className = "current";
 	}, []);
 
 	const reset = () => {
 		setWordsArray(generate(50));
 	};
+
 	return (
 		<div>
 			<UpperMenu countDown={countDown} />
-			<div className='type-box' onClick={inputFocus}>
+			<Stats
+				wpa={calculateWPM()}
+				accuracy={calculateAcc()}
+				correctChars={correctChars}
+				incorrectChars={incorrectChars}
+				missedChars={missedChars}
+				extraChars={extraChars}
+			/>
+			<div className='type-box' onClick={focusInput}>
 				<div className='words'>
 					{wordsArray.map((word, index) => (
 						<span key={index} className='word' ref={wordSpanRef[index]}>
