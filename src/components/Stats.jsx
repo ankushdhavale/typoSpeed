@@ -17,6 +17,8 @@ const Stats = ({
               <div className="title">Accuracy</div>
               <div className="subtitle">{accuracy}</div>
               <div className="title">Characters</div>
+              <div className="title">Characters</div>
+              <div className="title">Characters</div>
               <div className="subtitle">{correctChars}/{inCorrectChars}/{missedChars}/{extraChars}</div>
       </div>
       <div className="right-stats">
